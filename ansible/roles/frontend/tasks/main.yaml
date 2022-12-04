@@ -1,0 +1,76 @@
+      - name: install_npm
+        ignore_errors: true
+        become: true
+        apt:
+         name: npm
+         state: latest
+
+      - name: node_js_curl
+        become: true
+        shell: curl -fsSL https://deb.nodesource.com/setup_19.x | sudo -E bash - && sudo apt-get install -y nodejs
+
+      - name: Add user front-user
+        become: true
+        user:
+          name: front-user
+          groups: "sudo"
+          shell: /bin/bash 
+
+      - name: Folder www
+        become: true
+        file:
+          path: /var/www-data
+          owner: front-user
+          state: directory
+          mode: 0755
+
+      - name: Folder logs
+        become: true
+        file:
+          path: /logs
+          owner: front-user
+          state: directory
+          mode: 0755
+
+      - name: Nexus_frontend
+        become: true
+        get_url:
+           url: https://nexus.praktikum-services.ru/repository/sausage-store-anton-borodinskiy-frontend/sausage-store/1.0.279325/sausage-store-1.0.279325.tar.gz
+           dest: /var/www-data
+           username: "{{nexus_user}}"
+           password: "{{nexus_pass}}"  
+
+      - name: unpack_front
+        become: true
+        unarchive:
+          src: /var/www-data/sausage-store-1.0.279325.tar.gz
+          dest: /var/www-data 
+          remote_src: yes
+
+      - name: copy_front
+        become: true  
+        copy:
+          src: /var/www-data/sausage-store-1.0.279325/public_html/
+          dest: /var/www-data/dist/frontend/
+          owner: front-user
+          remote_src: yes
+
+      - name: Install http-server node.js package globally.
+        become: true      
+        npm:
+          name: http-server
+          global: yes
+
+      - name: copy_front_service
+        become: true
+        copy:
+           src: /home/student/homework5-3/sausage-store-frontend.service
+           dest: /etc/systemd/system/sausage-store-frontend.service
+      
+      - name: allow_443
+        become: true
+        shell: setcap 'cap_net_bind_service=+ep' $(readlink -f $(which node)) 
+
+      - name: Start Frontend
+        become: true
+        service: name=sausage-store-frontend.service state=started enabled=yes

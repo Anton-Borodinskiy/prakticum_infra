@@ -1,0 +1,49 @@
+      - name: openjdk-16-jdk
+        become: true
+        apt: 
+         name: openjdk-16-jdk
+         state: present
+
+      - name: Add user Jarservice
+        become: true
+        user:
+          name: jarservice
+          groups: "sudo"
+          shell: /bin/bash 
+
+      - name: Folder reports
+        become: true
+        file:
+          path: /log/reports
+          state: directory
+          recurse: yes
+          owner: jarservice
+          group: jarservice
+
+      - name: Folder logs
+        become: true
+        file:
+          path: /opt/log/
+          state: directory
+          recurse: yes
+          owner: jarservice
+          group: jarservice
+
+      - name: Nexus_backend
+        become: true
+        get_url: 
+           url: https://nexus.praktikum-services.ru/repository/sausage-store-anton-borodinskiy-backend/com/yandex/practicum/devops/sausage-store/1.0.279326/sausage-store-1.0.279326.jar
+           dest: /home/jarservice/sausage-store.jar
+           owner: jarservice
+           username: "{{nexus_user}}" 
+           password: "{{nexus_pass}}" 
+
+      - name: copy_back_service
+        become: true
+        copy:
+           src: /home/student/homework5-3/sausage-store-backend.service
+           dest: /etc/systemd/system/sausage-store-backend.service
+
+      - name: Start Backend
+        become: true
+        service: name=sausage-store-backend.service state=started enabled=yes
