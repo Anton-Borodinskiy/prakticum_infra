@@ -1,6 +1,10 @@
 all:
   hosts:
-    10.128.0.113:
+    10.128.0.111:
   vars:
-    nexus_user: user
-    nexus_pass: pass
+    nexus_user: user_user
+    nexus_pass: user_pass
+    front_ver: 1.0.279325
+    back_ver: 1.0.279326
+    backend_service_user: jarservice
+    frontend_service_user: front-user

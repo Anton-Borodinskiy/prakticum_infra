@@ -4,7 +4,7 @@ Description=sausage-store-frontend
 [Service]
 WorkingDirectory=/var/www-data
 ExecStart=http-server ./dist/frontend/ -p 443 --proxy http://localhost:8080
-User=front-user
+User={{ frontend_service_user }}
 Type=simple
 Restart=on-failure
 StandardOutput=file:/logs/out-front.log

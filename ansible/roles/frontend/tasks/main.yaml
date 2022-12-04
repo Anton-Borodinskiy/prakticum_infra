@@ -35,7 +35,7 @@
       - name: Nexus_frontend
         become: true
         get_url:
-           url: https://nexus.praktikum-services.ru/repository/sausage-store-anton-borodinskiy-frontend/sausage-store/1.0.279325/sausage-store-1.0.279325.tar.gz
+           url: https://nexus.praktikum-services.ru/repository/sausage-store-anton-borodinskiy-frontend/sausage-store/{{front_ver}}/sausage-store-{{front_ver}}.tar.gz
            dest: /var/www-data
            username: "{{nexus_user}}"
            password: "{{nexus_pass}}"  
@@ -43,14 +43,14 @@
       - name: unpack_front
         become: true
         unarchive:
-          src: /var/www-data/sausage-store-1.0.279325.tar.gz
+          src: /var/www-data/sausage-store-{{front_ver}}.tar.gz
           dest: /var/www-data 
           remote_src: yes
 
       - name: copy_front
         become: true  
         copy:
-          src: /var/www-data/sausage-store-1.0.279325/public_html/
+          src: /var/www-data/sausage-store-{{front_ver}}/public_html/
           dest: /var/www-data/dist/frontend/
           owner: front-user
           remote_src: yes
@@ -63,8 +63,8 @@
 
       - name: copy_front_service
         become: true
-        copy:
-           src: /home/student/homework5-3/sausage-store-frontend.service
+        template:
+           src: sausage-store-frontend.service.j2
            dest: /etc/systemd/system/sausage-store-frontend.service
       
       - name: allow_443

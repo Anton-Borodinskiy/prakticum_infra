@@ -2,7 +2,7 @@
 Description=Sausage-store
 
 [Service]
-User=jarservice
+User={{ backend_service_user }}
 Environment=REPORT_PATH=/log/reports
 Environment=LOG_PATH=/log
 StandardOutput=file:/opt/log/sausage-store.log
