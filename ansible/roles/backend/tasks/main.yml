@@ -7,34 +7,34 @@
       - name: Add user Jarservice
         become: true
         user:
-          name: jarservice
+          name: "{{backend_service_user}}"
           groups: "sudo"
           shell: /bin/bash 
 
       - name: Folder reports
         become: true
         file:
-          path: /log/reports
+          path: "{{backend_reports}}"
           state: directory
           recurse: yes
-          owner: jarservice
-          group: jarservice
+          owner: "{{backend_service_user}}"
+          group: "{{backend_service_user}}"
 
       - name: Folder logs
         become: true
         file:
-          path: /opt/log/
+          path: "{{backend_logs}}"
           state: directory
           recurse: yes
-          owner: jarservice
-          group: jarservice
+          owner: "{{backend_service_user}}"
+          group: "{{backend_service_user}}"
 
       - name: Nexus_backend
         become: true
         get_url: 
-           url: https://nexus.praktikum-services.ru/repository/sausage-store-anton-borodinskiy-backend/com/yandex/practicum/devops/sausage-store/{{back_ver}}/sausage-store-{{back_ver}}.jar
-           dest: /home/jarservice/sausage-store.jar
-           owner: jarservice
+           url: "https://nexus.praktikum-services.ru/repository/sausage-store-anton-borodinskiy-backend/com/yandex/practicum/devops/sausage-store/{{back_ver}}/sausage-store-{{back_ver}}.jar"
+           dest: "/home/{{backend_service_user}}/sausage-store.jar"
+           owner: "{{backend_service_user}}"
            username: "{{nexus_user}}" 
            password: "{{nexus_pass}}" 
 
@@ -44,6 +44,11 @@
            src: sausage-store-backend.service.j2
            dest: /etc/systemd/system/sausage-store-backend.service
 
+      - name: Reload daemon
+        become: true
+        systemd: 
+           daemon_reload: yes
+
       - name: Start Backend
         become: true
-        service: name=sausage-store-backend.service state=started enabled=yes
+        service: name=sausage-store-backend.service state=restarted enabled=yes

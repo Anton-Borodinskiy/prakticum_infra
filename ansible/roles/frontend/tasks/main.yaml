@@ -1,58 +1,77 @@
-      - name: install_npm
-        ignore_errors: true
-        become: true
-        apt:
-         name: npm
-         state: latest
+      - name: Install NodeJS and NPM Libraries
+        block:
+          - name: Download NodeJS script
+            become: true
+            get_url:
+              url: "https://deb.nodesource.com/setup_16.x"
+              dest: "/opt/nodesetup"
+              mode: 0755
+          
+          - name: Execute NodeJS script
+            become: true
+            shell: |
+              /opt/nodesetup
+              rm /opt/nodesetup
+          
+          - name: Install NodeJS
+            become: true
+            apt:
+              update_cache: true
+              name: nodejs
+              state: present
 
-      - name: node_js_curl
-        become: true
-        shell: curl -fsSL https://deb.nodesource.com/setup_19.x | sudo -E bash - && sudo apt-get install -y nodejs
+          - name: Install http-server
+            become: true
+            npm:
+              global: true
+              name: http-server
+              state: present
+
 
       - name: Add user front-user
         become: true
         user:
-          name: front-user
+          name: "{{frontend_service_user}}"
           groups: "sudo"
           shell: /bin/bash 
 
       - name: Folder www
         become: true
         file:
-          path: /var/www-data
-          owner: front-user
+          path: "{{frontend_directory}}"
+          owner: "{{frontend_service_user}}"
           state: directory
           mode: 0755
 
       - name: Folder logs
         become: true
         file:
-          path: /logs
-          owner: front-user
+          path: "{{frontend_logs}}"
+          owner: "{{frontend_service_user}}"
           state: directory
           mode: 0755
 
       - name: Nexus_frontend
         become: true
         get_url:
-           url: https://nexus.praktikum-services.ru/repository/sausage-store-anton-borodinskiy-frontend/sausage-store/{{front_ver}}/sausage-store-{{front_ver}}.tar.gz
-           dest: /var/www-data
+           url: "https://nexus.praktikum-services.ru/repository/sausage-store-anton-borodinskiy-frontend/sausage-store/{{front_ver}}/sausage-store-{{front_ver}}.tar.gz"
+           dest: "{{frontend_directory}}"
            username: "{{nexus_user}}"
            password: "{{nexus_pass}}"  
 
       - name: unpack_front
         become: true
         unarchive:
-          src: /var/www-data/sausage-store-{{front_ver}}.tar.gz
-          dest: /var/www-data 
+          src: "{{frontend_directory}}/sausage-store-{{front_ver}}.tar.gz"
+          dest: "{{frontend_directory}}"
           remote_src: yes
 
       - name: copy_front
         become: true  
         copy:
-          src: /var/www-data/sausage-store-{{front_ver}}/public_html/
-          dest: /var/www-data/dist/frontend/
-          owner: front-user
+          src: "{{frontend_directory}}/sausage-store-{{front_ver}}/public_html/"
+          dest: "{{frontend_directory}}/dist/frontend/"
+          owner: "{{frontend_service_user}}"
           remote_src: yes
 
       - name: Install http-server node.js package globally.
@@ -67,10 +86,11 @@
            src: sausage-store-frontend.service.j2
            dest: /etc/systemd/system/sausage-store-frontend.service
       
-      - name: allow_443
+      - name: Reload daemon
         become: true
-        shell: setcap 'cap_net_bind_service=+ep' $(readlink -f $(which node)) 
+        systemd: 
+           daemon_reload: yes
 
       - name: Start Frontend
         become: true
-        service: name=sausage-store-frontend.service state=started enabled=yes
+        service: name=sausage-store-frontend.service state=restarted enabled=yes

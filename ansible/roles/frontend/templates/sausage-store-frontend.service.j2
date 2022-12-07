@@ -2,12 +2,12 @@
 Description=sausage-store-frontend
 
 [Service]
-WorkingDirectory=/var/www-data
+WorkingDirectory={{ frontend_directory }}
 ExecStart=http-server ./dist/frontend/ -p 443 --proxy http://localhost:8080
 User={{ frontend_service_user }}
 Type=simple
 Restart=on-failure
-StandardOutput=file:/logs/out-front.log
+StandardOutput=file:{{ frontend_logs_standart }}
 AmbientCapabilities=CAP_NET_BIND_SERVICE
 
 [Install]
