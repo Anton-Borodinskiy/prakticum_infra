@@ -1,32 +1,27 @@
       - name: Install NodeJS and NPM Libraries
         block:
-          - name: Download NodeJS script
+          - name: Add nodejs apt key
             become: true
-            get_url:
-              url: "https://deb.nodesource.com/setup_16.x"
-              dest: "/opt/nodesetup"
-              mode: 0755
-          
-          - name: Execute NodeJS script
+            apt_key:
+              url: https://deb.nodesource.com/gpgkey/nodesource.gpg.key
+              state: present 
+          - name: Add nodejs 13.x ppa for apt repo
             become: true
-            shell: |
-              /opt/nodesetup
-              rm /opt/nodesetup
-          
-          - name: Install NodeJS
+            apt_repository:
+              repo: deb https://deb.nodesource.com/node_16.x bionic main
+              update_cache: yes
+          - name: Install nodejs
             become: true
             apt:
-              update_cache: true
+              update_cache: yes
               name: nodejs
               state: present
-
           - name: Install http-server
             become: true
             npm:
               global: true
               name: http-server
               state: present
-
 
       - name: Add user front-user
         become: true
@@ -73,24 +68,4 @@
           dest: "{{frontend_directory}}/dist/frontend/"
           owner: "{{frontend_service_user}}"
           remote_src: yes
-
-      - name: Install http-server node.js package globally.
-        become: true      
-        npm:
-          name: http-server
-          global: yes
-
-      - name: copy_front_service
-        become: true
-        template:
-           src: sausage-store-frontend.service.j2
-           dest: /etc/systemd/system/sausage-store-frontend.service
-      
-      - name: Reload daemon
-        become: true
-        systemd: 
-           daemon_reload: yes
-
-      - name: Start Frontend
-        become: true
-        service: name=sausage-store-frontend.service state=restarted enabled=yes
+        notify: "restart front"

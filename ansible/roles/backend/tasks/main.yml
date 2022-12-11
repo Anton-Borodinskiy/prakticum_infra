@@ -31,6 +31,7 @@
 
       - name: Nexus_backend
         become: true
+        notify: "restart back"
         get_url: 
            url: "https://nexus.praktikum-services.ru/repository/sausage-store-anton-borodinskiy-backend/com/yandex/practicum/devops/sausage-store/{{back_ver}}/sausage-store-{{back_ver}}.jar"
            dest: "/home/{{backend_service_user}}/sausage-store.jar"
@@ -38,17 +39,3 @@
            username: "{{nexus_user}}" 
            password: "{{nexus_pass}}" 
 
-      - name: copy_back_service
-        become: true
-        template:
-           src: sausage-store-backend.service.j2
-           dest: /etc/systemd/system/sausage-store-backend.service
-
-      - name: Reload daemon
-        become: true
-        systemd: 
-           daemon_reload: yes
-
-      - name: Start Backend
-        become: true
-        service: name=sausage-store-backend.service state=restarted enabled=yes
