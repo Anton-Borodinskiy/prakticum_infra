@@ -1,0 +1,71 @@
+      - name: Install NodeJS and NPM Libraries
+        block:
+          - name: Add nodejs apt key
+            become: true
+            apt_key:
+              url: https://deb.nodesource.com/gpgkey/nodesource.gpg.key
+              state: present 
+          - name: Add nodejs 13.x ppa for apt repo
+            become: true
+            apt_repository:
+              repo: deb https://deb.nodesource.com/node_16.x bionic main
+              update_cache: yes
+          - name: Install nodejs
+            become: true
+            apt:
+              update_cache: yes
+              name: nodejs
+              state: present
+          - name: Install http-server
+            become: true
+            npm:
+              global: true
+              name: http-server
+              state: present
+
+      - name: Add user front-user
+        become: true
+        user:
+          name: "{{frontend_service_user}}"
+          groups: "sudo"
+          shell: /bin/bash 
+
+      - name: Folder www
+        become: true
+        file:
+          path: "{{frontend_directory}}"
+          owner: "{{frontend_service_user}}"
+          state: directory
+          mode: 0755
+
+      - name: Folder logs
+        become: true
+        file:
+          path: "{{frontend_logs}}"
+          owner: "{{frontend_service_user}}"
+          state: directory
+          mode: 0755
+
+      - name: Nexus_frontend
+        become: true
+        get_url:
+           url: "https://nexus.praktikum-services.ru/repository/sausage-store-anton-borodinskiy-frontend/sausage-store/{{front_ver}}/sausage-store-{{front_ver}}.tar.gz"
+           dest: "{{frontend_directory}}"
+           username: "{{nexus_user}}"
+           password: "{{nexus_pass}}"  
+
+      - name: unpack_front
+        become: true
+        unarchive:
+          src: "{{frontend_directory}}/sausage-store-{{front_ver}}.tar.gz"
+          dest: "{{frontend_directory}}"
+          remote_src: yes
+
+      - name: copy_front
+        become: true  
+        copy:
+          src: "{{frontend_directory}}/sausage-store-{{front_ver}}/public_html/"
+          dest: "{{frontend_directory}}/dist/frontend/"
+          owner: "{{frontend_service_user}}"
+          remote_src: yes
+        notify: "restart front"

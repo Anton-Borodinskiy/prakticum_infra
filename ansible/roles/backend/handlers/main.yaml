@@ -1,0 +1,17 @@
+      - name: copy_back_service
+        become: true
+        template:
+           src: sausage-store-backend.service.j2
+           dest: /etc/systemd/system/sausage-store-backend.service
+        listen: "restart back"
+
+      - name: Reload daemon
+        become: true
+        systemd: 
+           daemon_reload: yes
+        listen: "restart back"
+
+      - name: Start Backend
+        become: true
+        service: name=sausage-store-backend.service state=restarted enabled=yes
+        listen: "restart back"

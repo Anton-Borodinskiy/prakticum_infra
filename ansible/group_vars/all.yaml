@@ -1,0 +1,12 @@
+nexus_user: user
+nexus_pass: user
+front_ver: 1.0.279325
+back_ver: 1.0.279326
+backend_service_user: jarservice
+frontend_service_user: front-user
+backend_logs: /opt/log/
+backend_log_path: /log
+backend_reports: /log/reports
+frontend_directory: /var/www-data
+frontend_logs: /logs
+frontend_logs_standart: /logs/out-front.log
