@@ -1,0 +1,31 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-report
+  labels:
+    app: backend-report
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: backend-report
+  template:
+    metadata:
+      labels:
+        app: backend-report
+    spec:
+      containers:
+        - name: backend-report
+          image: gitlab.praktikum-services.ru:5050/anton-borodinskiy/sausage-store/sausage-backend-report:latest
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: DB
+              value: mongodb://Borodinskiy26:Testusr1234@rc1b-i501k9ruzubovb2x.mdb.yandexcloud.net:27018/Borodinskiy26?tls=true&tlsAllowInvalidCertificates=true
+          ports:
+            - name: backend-report
+              containerPort: 5000
+      imagePullSecrets:
+        - name: docker-config-secret
