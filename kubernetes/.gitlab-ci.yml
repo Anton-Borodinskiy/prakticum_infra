@@ -16,6 +16,8 @@ deploy-k8s:
       - chmod 644 ~/.ssh/known_hosts
 
   script:
+    - ssh ${DEV_USER}@${DEV_HOST} "mkdir -p /home/${DEV_USER}/kubernetes"
+    - scp -rp ./kubernetes/* ${DEV_USER}@${DEV_HOST}:/home/${DEV_USER}/kubernetes
     - scp -rp ./kubernetes/* ${DEV_USER}@${DEV_HOST}:/home/${DEV_USER}/kubernetes
     - ssh ${DEV_USER}@${DEV_HOST}
       "export "kubeconfig='${kubeconfig}";
