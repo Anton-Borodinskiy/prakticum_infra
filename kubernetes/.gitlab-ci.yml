@@ -23,4 +23,6 @@ deploy-k8s:
     - scp -rp ~/.kube/config ${DEV_USER}@${DEV_HOST}:~/.kube/config
     - ssh ${DEV_USER}@${DEV_HOST} /bin/bash -s < ./kubernetes/deploy.sh
 
-
+  environment:
+    name: borodinskiy-anton-12.k8s.praktikum-services.tech
+    url: https://borodinskiy-anton-12.k8s.praktikum-services.tech
