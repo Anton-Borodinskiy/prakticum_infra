@@ -1,5 +1,6 @@
 set +e
-echo "${kubeconfig}" > .kube/config
+mkdir -p .kube/
+echo "$KUBECONFIG" > .kube/config
 set -e
 
 kubectl apply -f ./kubernetes/backend
