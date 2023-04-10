@@ -1,3 +1,5 @@
+#!/bin/bash
+
 set +e
 mkdir -p .kube/
 echo -e "$KUBECONFIG" | sudo tee .kube/config
