@@ -1,7 +1,6 @@
 set +e
 mkdir -p .kube/
-echo "$KUBECONFIG" > .kube/config
-set -e
+echo -e "KUBECONFIG" | sudo tee .kube/config
 
 kubectl apply -f ./kubernetes/backend
 kubectl apply -f ./kubernetes/backend-report
