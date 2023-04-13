@@ -5,7 +5,17 @@ metadata:
   labels:
     app: frontend
 spec:
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: "app"
+            operator: In
+            values:
+            - frontend
   replicas: 1
+  revisionHistoryLimit: 15
   strategy:
     type: Recreate
   selector:

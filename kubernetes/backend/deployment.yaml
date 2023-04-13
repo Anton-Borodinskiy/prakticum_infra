@@ -6,11 +6,13 @@ metadata:
   labels:
     app: backend
 spec:
-  replicas: 2
-  # Стратегия развёртывания. Recreate — удалит сначала все старые Pod'ы
-  # Есть и более гибкая стратегии, например, RollingUpdate, которая будет обновлять Pod'ы порциями
+  replicas: 1
+  revisionHistoryLimit: 15
   strategy:
-    type: Recreate
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 20% 
   selector:
     matchLabels:
       app: backend
