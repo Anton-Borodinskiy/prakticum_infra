@@ -27,7 +27,7 @@ spec:
           imagePullPolicy: IfNotPresent
           env:
             - name: VAULT_HOST
-              value: 130.193.37.102
+              value: 158.160.41.71
             - name: VAULT_TOKEN
               valueFrom:
                 secretKeyRef:
