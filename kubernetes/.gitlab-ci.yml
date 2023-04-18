@@ -24,8 +24,7 @@ deploy-k8s:
     - ssh ${DEV_USER}@${DEV_HOST}
       "kubectl apply -f ./kubernetes/backend;
        kubectl apply -f ./kubernetes/backend-report;
-       kubectl apply -f ./kubernetes/frontend;
-       rm .kube/config;"
+       kubectl apply -f ./kubernetes/frontend;"
 
 
   environment:

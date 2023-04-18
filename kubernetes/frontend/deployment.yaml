@@ -6,6 +6,7 @@ metadata:
     app: frontend
 spec:
   replicas: 1
+  revisionHistoryLimit: 15
   strategy:
     type: Recreate
   selector:
@@ -26,6 +27,15 @@ spec:
           ports:
             - name: frontend
               containerPort: 80
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: "app"
+                operator: In
+                values:
+                - frontend
       imagePullSecrets:
         - name: docker-config-secret
       volumes:

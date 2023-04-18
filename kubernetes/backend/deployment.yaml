@@ -6,11 +6,13 @@ metadata:
   labels:
     app: backend
 spec:
-  replicas: 2
-  # Стратегия развёртывания. Recreate — удалит сначала все старые Pod'ы
-  # Есть и более гибкая стратегии, например, RollingUpdate, которая будет обновлять Pod'ы порциями
+  replicas: 1
+  revisionHistoryLimit: 15
   strategy:
-    type: Recreate
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 20% 
   selector:
     matchLabels:
       app: backend
@@ -25,7 +27,7 @@ spec:
           imagePullPolicy: IfNotPresent
           env:
             - name: VAULT_HOST
-              value: 130.193.37.102
+              value: 158.160.41.71
             - name: VAULT_TOKEN
               valueFrom:
                 secretKeyRef:
