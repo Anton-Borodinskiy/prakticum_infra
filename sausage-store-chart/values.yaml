@@ -1,0 +1,41 @@
+backend:
+  image: gitlab.praktikum-services.ru:5050/anton-borodinskiy/sausage-store/sausage-backend:latest
+  replicaCount: 1
+  tag: latest
+  pullPolicy: IfNotPresent
+  port: 8080
+
+  fullnameOverride: store-backend
+
+backend-report:
+  image: gitlab.praktikum-services.ru:5050/anton-borodinskiy/sausage-store/sausage-backend-report:latest
+  
+  fullnameOverride: store-report
+
+  autoscaling:
+    hpa:
+      enabled: true
+  
+
+frontend:
+  image: gitlab.praktikum-services.ru:5050/anton-borodinskiy/sausage-store/sausage-frontend:latest
+
+  fullnameOverride: store-frontend
+
+  ingress:
+    enabled: true
+    host: "borodinskiy-anton-12.k8s.praktikum-services.tech"
+
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+          - matchExpressions:
+              - key: app
+                operator: In
+                values:
+                  - frontend
+    
+  backend:
+    host: store-backend
+    port: "8080"

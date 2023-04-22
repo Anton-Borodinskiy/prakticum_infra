@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "backend-report.fullname" . }}
+  labels:
+    {{- include "backend-report.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  revisionHistoryLimit: 15
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      {{- include "backend-report.labels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "backend-report.labels" . | nindent 8 }}
+    spec:
+      containers:
+        - name: {{ include "backend-report.fullname" . }}
+          image: "{{ .Values.backendreport.image }}:{{ .Values.backendreport.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.backendreport.pullPolicy }}
+          env:
+            - name: DB
+              value: {{ .Values.env.mongo }}
+          ports:
+            - name: backend-report
+              containerPort: {{ .Values.service.port }}
+      imagePullSecrets:
+        - name: {{ .Values.imagePullSecrets.name }}

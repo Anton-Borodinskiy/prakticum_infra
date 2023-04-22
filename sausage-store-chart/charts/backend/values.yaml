@@ -1,0 +1,29 @@
+backend:
+  image: gitlab.praktikum-services.ru:5050/anton-borodinskiy/sausage-store/sausage-backend
+  tag: latest
+  pullPolicy: IfNotPresent
+
+replicaCount: 1
+
+service:
+  type: ClusterIP
+  port: 8080
+
+vault:
+  host: 158.160.41.71
+  token: aHZzLkNBRVNJSGl4dW01U21BLTl2MGNQZ3djWS1UcHhBeXlEbzFla3ZMX2FJemo4YnlEVEdoNEtIR2gyY3k0NGExUlRjV3AyTTJWWVlXSjBhRmRLTm1wM05sUkdaV0k=
+
+imagePullSecrets: 
+  name: docker-config-secret
+
+autoscaling:
+  vpa:
+    enabled: false
+    updateMode: "Auto"
+    controlledResources: ["cpu", "memory"]
+    minAllowed:
+      cpu: 100m
+      memory: 128Mi
+    maxAllowed:
+      cpu: 500m
+      memory: 2048Mi
