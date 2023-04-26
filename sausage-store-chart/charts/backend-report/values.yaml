@@ -1,0 +1,21 @@
+backendreport:
+  image: gitlab.praktikum-services.ru:5050/anton-borodinskiy/sausage-store/sausage-backend-report
+  tag: latest
+  pullPolicy: IfNotPresent
+
+replicaCount: 1
+
+service:
+  type: ClusterIP
+  port: 5000
+
+imagePullSecrets: 
+  name: docker-config-secret
+
+autoscaling:
+  hpa:
+    minReplicas: 1
+    maxReplicas: 5
+    targetCPUUtilizationPercentage: 75
+env:
+  mongo: mongodb://Borodinskiy26:Testusr1234@rc1b-i501k9ruzubovb2x.mdb.yandexcloud.net:27018/Borodinskiy26?tls=true&tlsAllowInvalidCertificates=true

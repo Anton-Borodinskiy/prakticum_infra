@@ -1,0 +1,14 @@
+frontend:
+  image: gitlab.praktikum-services.ru:5050/anton-borodinskiy/sausage-store/sausage-frontend
+  tag: latest
+  pullPolicy: IfNotPresent
+
+replicaCount: 1
+
+service:
+  type: ClusterIP
+  port: 80
+
+imagePullSecrets: 
+  name: docker-config-secret
+
