@@ -5,6 +5,10 @@ backend:
   pullPolicy: IfNotPresent
   port: 8080
 
+  vault:
+    host: 158.160.41.71
+    token: aHZzLkNBRVNJSGl4dW01U21BLTl2MGNQZ3djWS1UcHhBeXlEbzFla3ZMX2FJemo4YnlEVEdoNEtIR2gyY3k0NGExUlRjV3AyTTJWWVlXSjBhRmRLTm1wM05sUkdaV0k=
+    
   fullnameOverride: store-backend
 
 backend-report:
